@@ -176,7 +176,8 @@ CVEXPERT는 CVE 실습 환경의 빈번한 생성·소멸이라는 서비스 특
 ![lab](lab.gif)
 
 
-
+![news](news.gif)
+![his](his.gif)
 
 
 
