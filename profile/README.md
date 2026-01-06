@@ -127,17 +127,56 @@ CVEXPERT는 실습 환경의 탄력적 운영과 비용 효율성을 고려하�
   <img width="1000" height="600" alt="image" src="https://github.com/user-attachments/assets/6530000e-2ca1-4291-b9f0-5b4479999781" />
 </div>
 
-<br>
+---
 
-### 인프라 구성의 핵심
-1. **Hybrid Network:** 온프레미스와 AWS를 Site-to-Site VPN(IPsec)으로 연결한 통합 내부망 구성
-2. **Network Segmentation:** Service / Management / LAB / CI·CD Zone 분리를 통해 역할별 네트워크 격리 및 보안 강화
-3. **High Availability:** Kubernetes와 Database 핵심 요소 중심의 고가용성 아키텍처 적용
-4. **Automation & Cost Optimization:** Terraform·CI/CD 기반 운영 자동화와 VPN 기반 네트워크로 비용 효율성 확보
+## 인프라 및 기술적 특징
+
+CVEXPERT는 CVE 실습 환경의 빈번한 생성·소멸이라는 서비스 특성을 고려해,
+안정성·운영 효율·비용을 균형 있게 만족하는 인프라 아키텍처를 설계했습니다.
+
+### 1️⃣ 탄력적 실습 환경 운영 (Elastic Lab Provisioning)
+- **문제:** 실습 요청 시점마다 인프라가 급격히 생성·삭제되는 구조
+- **해결:**
+  - Terraform Runner 기반 `create/destroy/status` API로 CVE별 템플릿을 자동 실행
+  - 실습 환경은 필요 시점에만 동적으로 AWS에서 확장
+- **결과:** 트래픽 변동에도 안정적으로 실습 환경 제공
+
+### 2️⃣ 네트워크 격리 및 안정성 (Network Segmentation & Connectivity)
+보안 영역을 명확히 분리하면서도, 온프레미스와 클라우드 간 실습 환경을 안정적으로 연동하기 위해 설계했습니다.
+- 온프레미스와 AWS를 **Site-to-Site VPN(IPsec)** 으로 연결
+- Service / Management / LAB / CI·CD Zone으로 **네트워크 논리적 분리**
+- ESXi 기반 vSwitch를 활용한 영역 간 격리<br>
+
+### 3️⃣ 고가용성 (High Availability)
+단일 DB 장애로 인해 실습 및 서비스가 중단되는 상황을 방지하고, 트래픽 변동과 노드 장애 상황에서도 서비스가 지속적으로 제공되도록 설계하였습니다.
+- **Database**
+  - Master–Replica 구조
+  - Virtual IP 기반 요청 분산
+  - Orchestrator를 통한 자동 장애 감지 및 승격<br>
+- **Kubernetes**
+  - Master Node 3대 / Worker Node 3대 구성
+  - Ingress, HPA, DaemonSet 기반 트래픽 분산 및 자동 확장<br>
+
+### 4️⃣ 운영 자동화 (Automation)
+- **IaC**: Terraform 기반 실습 인프라 생성·삭제 자동화
+- **CI/CD**: **GitLab → Jenkins → Harbor → ArgoCD** 파이프라인 구성
+- **Security**: **Cosign**을 활용한 컨테이너 이미지 서명 및 무결성 검증<br>
 
 ---
 
-## ✨ 주요 서비스 기능
+
+## 주요 서비스 기능
+
+1. CVE 학습
+   1-1 CVE 이론
+   
+   1-2 실제 취약점 기반 PoC 실습
+
+   
+
+
+
+
 
 | 기능 | 설명 | 화면 예시 |
 | :--- | :--- | :--- |
@@ -151,22 +190,36 @@ CVEXPERT는 실습 환경의 탄력적 운영과 비용 효율성을 고려하�
 
 ## ☁️ 인프라 및 기술적 특징
 
-### 1️⃣ 원클릭 자동 생성/종료 (Automation)
-- **문제:** CVE 실습 환경을 수동으로 만들면 시간/오류/재현성 문제가 큼
-- **해결:** Terraform Runner 기반 `create/destroy/status` API로 CVE별 템플릿을 자동 실행
-- **결과:** 환경 구축 시간을 단축하고, 동일 CVE 실습의 재현성/표준화를 확보
+CVEXPERT는 CVE 실습 환경의 빈번한 생성·소멸이라는 서비스 특성을 고려해,
+안정성·운영 효율·비용을 균형 있게 만족하는 인프라 아키텍처를 설계했습니다.
 
-### 2️⃣ 안전한 격리 (Isolation)
-- TODO: 사용자별 인스턴스 분리, 네트워크 분리, 보안그룹/서브넷 전략
-- TODO: TTL/세션 만료, 자동 종료로 비용/보안 리스크 최소화
+### 1️⃣ 탄력적 실습 환경 운영 (Elastic Lab Provisioning)
+- **문제:** 실습 요청 시점마다 인프라가 급격히 생성·삭제되는 구조
+- **해결:**
+  - Terraform Runner 기반 `create/destroy/status` API로 CVE별 템플릿을 자동 실행
+  - 실습 환경은 필요 시점에만 동적으로 AWS에서 확장
+- **결과:** 트래픽 변동에도 안정적으로 실습 환경 제공
 
-### 3️⃣ 인증/인가 통합 (SSO & RBAC)
-- TODO: Keycloak 연동 방식(Realm/Client/Role)
-- TODO: 관리자/일반 사용자 권한 분리, API 접근 제어
+### 2️⃣ 네트워크 격리 및 안정성 (Network Segmentation & Connectivity)
+- 온프레미스와 AWS를 **Site-to-Site VPN(IPsec)** 으로 연결
+- Service / Management / LAB / CI·CD Zone으로 네트워크 논리적 분리
+- ESXi 기반 vSwitch를 활용한 영역 간 격리<br>
+→ 보안 영역 분리와 실습 환경 연동을 동시에 만족
 
-### 4️⃣ 통합 관측 가능성 (Observability)
-- TODO: 수집 대상(시스템 로그, 인증 로그, 실습 로그, 메트릭)
-- TODO: 대시보드/알람 구성(예: 지연시간, 오류율, 리소스 사용량, 세션 상태)
+### 3️⃣ 고가용성 (High Availability)
+단일 DB 장애로 인해 실습 및 서비스가 중단되는 상황을 방지하고, 트래픽 변동과 노드 장애 상황에서도 서비스가 지속적으로 제공되도록 설계하였습니다.
+- **Database**
+  - Master–Replica 구조
+  - Virtual IP 기반 요청 분산
+  - Orchestrator를 통한 자동 장애 감지 및 승격<br>
+- **Kubernetes**
+  - Master Node 3대 / Worker Node 3대 구성
+  - Ingress, HPA, DaemonSet 기반 트래픽 분산 및 자동 확장<br>
+
+### 4️⃣ 운영 자동화 (Automation)
+- **IaC**: Terraform 기반 실습 인프라 생성·삭제 자동화
+- **CI/CD**: **GitLab → Jenkins → Harbor → ArgoCD** 파이프라인 구성
+- **Security**: **Cosign**을 활용한 컨테이너 이미지 서명 및 무결성 검증<br>
 
 ---
 
